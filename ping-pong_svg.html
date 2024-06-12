@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ping-pong_svg</title>
+    <style>
+        body {
+            text-align: center;
+        }
+        .wrapper {
+            width: 800px;
+            height: auto;
+            margin: 0 auto 0;
+        }
+        .instructions {
+            font-size: 15px;
+            font-weight: 600;
+            color: rgb(102, 100, 100);
+        }
+        .button {
+            width: 100px;
+            height: 35px;
+            border: 1px  rgb(85, 204, 87) solid;
+            background-color: rgb(127, 239, 129);
+            box-shadow: 1px 5px 10px rgb(101, 137, 101) inset;
+            border-radius: 15px;
+            color: rgb(42, 145, 52);
+            font-size: 20px;
+            font-weight: 600;
+            display: block;
+           
+        }
+        .button:hover {
+            box-shadow: 1px 5px 10px rgb(127, 168, 127) inset;
+        }
+        .button:active {
+            box-shadow: 0px 0px 7px rgb(55, 56, 55);
+            background-color: rgb(91, 215, 120);
+            color: rgb(25, 126, 35);
+        }
+        .button:focus {
+            border: 1px  rgb(76, 151, 78) solid;
+            box-shadow: 0px 0px 10px rgb(117, 72, 102);
+        }
+        .restartGame {
+            z-index: 1;
+            padding: 5px;
+            width: 250px;
+            text-align: center;
+            font-size: 25px;
+            color: rgb(99, 62, 81);
+            background-color: rgb(249, 202, 215);
+            border: 1px rgb(156, 27, 98) solid;
+            box-shadow: 1px 3px 7px rgb(157, 92, 130) inset;
+            border-radius: 20px;
+            font-weight: 600;
+            display: block;
+            position: absolute;
+            margin-top: 340px;
+            margin-left: 275px;
+            display: none;
+            
+        }
+        .restartGame:hover {
+            box-shadow: 2px 2px 7px rgb(82, 47, 67) inset;
+        }
+        .restartGame:active {
+            box-shadow: 0px 0px 10px rgb(67, 39, 54) inset;
+        }
+
+    </style>
+</head>
+<body>
+    
+    <script>
+        const wrapper = document.createElement("div");
+        wrapper.classList.add("wrapper");
+        document.body.prepend(wrapper);
+
+        const button = document.createElement("button");
+        wrapper.prepend(button);
+        button.classList.add("button");
+        button.textContent = "Start!"
+
+        const instructions = document.createElement("p");
+        wrapper.prepend(instructions);
+        instructions.classList.add("instructions");
+        instructions.textContent = "Use the Shift & Ctrl buttons for the left racket, PgUp & PgDn buttons for the right racket"
+
+        const restartGame = document.createElement("button");
+        wrapper.prepend(restartGame);
+        restartGame.classList.add("restartGame");
+        restartGame.textContent = "Restart the game";
+
+
+        const svgNS = "http://www.w3.org/2000/svg";
+
+        const svg = document.createElementNS(svgNS, "svg");
+        svg.setAttributeNS(null, "width", 800);
+        svg.setAttributeNS(null, "height", 620);
+        svg.setAttributeNS(null, "id", "svg");
+        button.after(svg);
+
+        const playingFieldWidth = 800;
+        const playingFieldHeight = 500;
+
+        let playingField = document.createElementNS(svgNS,"rect");
+        playingField.setAttributeNS(null, "x", 0);
+        playingField.setAttributeNS(null, "y", 100);
+        playingField.setAttributeNS(null, "width", playingFieldWidth);
+        playingField.setAttributeNS(null, "height", playingFieldHeight);
+        playingField.setAttributeNS(null, "fill", "yellow");
+        svg.append(playingField);
+
+        const RacketWidth = 12;
+        const RacketHeight = 150;
+        let leftRacketPosX = 0;
+        let leftRacketPosY = playingFieldHeight/2 - RacketHeight/2;
+        let rightRacketPosX = playingFieldWidth - RacketWidth;
+        let rightRacketPosY = playingFieldHeight/2 - RacketHeight/2;
+
+        let leftRacket = document.createElementNS(svgNS,"rect");
+        leftRacket.setAttributeNS(null, "x", leftRacketPosX);
+        leftRacket.setAttributeNS(null, "y", 100);
+        leftRacket.setAttributeNS(null, "width", RacketWidth);
+        leftRacket.setAttributeNS(null, "height", RacketHeight);
+        leftRacket.setAttributeNS(null, "fill", "green");
+        svg.append(leftRacket);
+
+        leftRacket.style.transform = `translateY(${leftRacketPosY}px)`;
+
+        let rightRacket = document.createElementNS(svgNS,"rect");
+        rightRacket.setAttributeNS(null, "x", 0);
+        rightRacket.setAttributeNS(null, "y", 100);
+        rightRacket.setAttributeNS(null, "width", RacketWidth);
+        rightRacket.setAttributeNS(null, "height", RacketHeight);
+        rightRacket.setAttributeNS(null, "fill", "blue");
+        svg.append(rightRacket);
+
+        rightRacket.style.transform = `translate(${rightRacketPosX}px, ${rightRacketPosY}px`;
+
+        let upPressedLR = false; //нажато перемещение вверх для левой ракетки
+        let downPressedLR = false; //нажато перемещение вниз для левой ракетки
+
+        let upPressedRR = false; //нажато перемещение вверх для правой ракетки
+        let downPressedRR = false; //нажато перемещение вниз для правой ракетки
+
+        document.addEventListener("keydown", keydownHandler, false);
+        document.addEventListener("keyup", keyupHandler, false);
+
+        function keydownHandler(event) {
+            switch(event.keyCode) {
+                case 16: 
+                    upPressedLR = true;
+                    break;
+                case 17:
+                    downPressedLR = true;  
+                    break;
+                case 38:
+                    upPressedRR = true;
+                    break;
+                case 40:
+                    downPressedRR = true;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        function keyupHandler(event) {
+            switch(event.keyCode) {
+                case 16: 
+                    upPressedLR = false;
+                    break;
+                case 17:
+                    downPressedLR = false;  
+                    break;
+                case 38:
+                    upPressedRR = false;
+                    break;
+                case 40:
+                    downPressedRR = false;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        function moveRacket() {
+            if (upPressedLR && leftRacketPosY > 0) {
+                leftRacketPosY -= 5;
+               leftRacket.style.transform = `translateY(${leftRacketPosY}px)`;
+            }
+            if (downPressedLR && leftRacketPosY < 350) {
+                leftRacketPosY += 5;
+                leftRacket.style.transform = `translateY(${leftRacketPosY}px)`;
+            }
+            if (upPressedRR && rightRacketPosY > 0) {
+                rightRacketPosY -= 5;
+                rightRacket.style.transform = `translate(${rightRacketPosX}px, ${rightRacketPosY}px`;
+            }
+            if (downPressedRR && rightRacketPosY < 350) {
+                rightRacketPosY += 5;
+                rightRacket.style.transform = `translate(${rightRacketPosX}px, ${rightRacketPosY}px`;
+            }
+        }
+
+        setInterval(moveRacket, 40);
+
+        let clickAudio = new Audio("http://www.pachd.com/sfx/pop2.wav");
+        let gameOverAudio = new Audio("http://www.superluigibros.com/downloads/sounds/PC/MARIOSFUNDAMENTALS/WAVS/Drum%20Roll.wav");
+
+        let ballH = {
+            posX: 380,
+            posY: 230,
+            speedX: 2,
+            speedY: 1,
+            width : 40,
+            height: 40,
+
+            update : function() {
+                ball.style.transform = `translate(${ballH.posX}px, ${ballH.posY}px`;
+            }
+        }
+
+        let ball = document.createElementNS(svgNS,"circle");
+        ball.setAttributeNS(null, "cx", 20);
+        ball.setAttributeNS(null, "cy", 120);
+        ball.setAttributeNS(null, "r", 20);
+        ball.setAttributeNS(null, "fill", "red");
+        ball.setAttributeNS(null, "display", "none");
+        svg.append(ball);
+
+        let leftPlayerScore = document.createElementNS(svgNS,"text");
+        leftPlayerScore.setAttributeNS(null, "x", 369);
+        leftPlayerScore.setAttributeNS(null, "y", 60);
+        leftPlayerScore.setAttributeNS(null, "fill", "green");
+        leftPlayerScore.setAttributeNS(null, "text-anchor", "middle");
+        leftPlayerScore.setAttributeNS(null, "font-size", 50);   
+        svg.append(leftPlayerScore);
+        leftPlayerScore.textContent = "0";
+
+        let colon = document.createElementNS(svgNS,"text");
+        colon.setAttributeNS(null, "x", 394);
+        colon.setAttributeNS(null, "y", 60);
+        colon.setAttributeNS(null, "fill", "black");
+        colon.setAttributeNS(null, "text-anchor", "middle");
+        colon.setAttributeNS(null, "font-size", 50);   
+        svg.append(colon);
+        colon.textContent = ":";
+
+        let rightPlayerScore = document.createElementNS(svgNS,"text");
+        rightPlayerScore.setAttributeNS(null, "x", 420);
+        rightPlayerScore.setAttributeNS(null, "y", 60);
+        rightPlayerScore.setAttributeNS(null, "fill", "blue");
+        rightPlayerScore.setAttributeNS(null, "text-anchor", "middle");
+        rightPlayerScore.setAttributeNS(null, "font-size", 50);   
+        svg.append(rightPlayerScore);
+        rightPlayerScore.textContent = "0";
+
+        let counter = document.createElementNS(svgNS,"circle");
+        counter.setAttributeNS(null, "cx", 765);
+        counter.setAttributeNS(null, "cy", 50);
+        counter.setAttributeNS(null, "r", 30);
+        counter.setAttributeNS(null, "fill", "rgb(252, 165, 144)");
+        counter.setAttributeNS(null, "display", "none");
+        svg.append(counter);
+
+        let textCounter = document.createElementNS(svgNS,"text");
+        textCounter.setAttributeNS(null, "x", 765);
+        textCounter.setAttributeNS(null, "y", 65);
+        textCounter.setAttributeNS(null, "fill", "rgb(167, 25, 25)");
+        textCounter.setAttributeNS(null, "text-anchor", "middle");
+        textCounter.setAttributeNS(null, "font-size", 50);   
+        textCounter.setAttributeNS(null, "display", "none");
+        svg.append(textCounter);
+        textCounter.textContent = "3";
+
+        let over = document.createElementNS(svgNS,"text");
+        over.setAttributeNS(null, "x", 400);
+        over.setAttributeNS(null, "y", 230);
+        over.setAttributeNS(null, "fill", "red");
+        over.setAttributeNS(null, "text-anchor", "middle");
+        over.setAttributeNS(null, "font-size", 50);   
+        over.setAttributeNS(null, "display", "none");
+        svg.append(over);
+        over.textContent = "Game over!";
+
+        button.setAttributeNS(null, "onclick", "start();");   
+        function start() {
+           clickSoundInit();
+            if (Number(rightPlayerScore.textContent) < 5 && Number(leftPlayerScore.textContent) < 5) {
+
+                ball.style.display = "block";
+
+                ballH.posX = Math.random() * (381 - 379) +379;
+                ballH.posY = Math.random() * (231 - 229) +229;
+
+                if ((ballH.posX >= 380) && (ballH.posY <= 230)) {
+                    let timerID = requestAnimationFrame(function runBall() {
+                        if ( ballH.posX == playingFieldWidth-ballH.width) {
+                            clearTimeout(timerID);
+                            changeGameScore();
+                            rightPlayerScore.textContent = Number(rightPlayerScore.textContent) + 1;
+                        } else if (ballH.posX == 0) {
+                            clearTimeout(timerID);
+                            changeGameScore();
+                            leftPlayerScore.textContent = Number(leftPlayerScore.textContent) + 1;
+                        } else {
+                            moveBall1();
+                            timerID = requestAnimationFrame(runBall);
+                        }
+                    });
+                }
+                if ((ballH.posX <= 380) && (ballH.posY <= 230)) {
+                    let timerID = requestAnimationFrame(function runBall() {
+                        if ( ballH.posX == playingFieldWidth-ballH.width) {
+                            clearTimeout(timerID);
+                            changeGameScore();
+                            rightPlayerScore.textContent = Number(rightPlayerScore.textContent) + 1;
+                        } else if (ballH.posX == 0) {
+                            clearTimeout(timerID);
+                            changeGameScore();
+                            leftPlayerScore.textContent = Number(leftPlayerScore.textContent) + 1;
+                        } else {
+                            moveBall2();
+                            timerID = requestAnimationFrame(runBall);
+                        }
+                    });
+                }
+                if ((ballH.posX <= 380) && (ballH.posY >=230)) {
+                    let timerID = requestAnimationFrame(function runBall() {
+                        if ( ballH.posX == playingFieldWidth-ballH.width) {
+                            clearTimeout(timerID);
+                            changeGameScore();
+                            rightPlayerScore.textContent = Number(rightPlayerScore.textContent) + 1;
+                        } else if (ballH.posX == 0) {
+                            clearTimeout(timerID);
+                            changeGameScore();
+                            leftPlayerScore.textContent = Number(leftPlayerScore.textContent) + 1;
+                        } else {
+                            moveBall3();
+                            timerID = requestAnimationFrame(runBall);
+                        }
+                    });
+                }
+                if ((ballH.posX >= 380) && (ballH.posY >= 230)) {
+                    let timerID = requestAnimationFrame(function runBall() {
+                        if ( ballH.posX == playingFieldWidth-ballH.width) {
+                            clearTimeout(timerID);
+                            changeGameScore();
+                            rightPlayerScore.textContent = Number(rightPlayerScore.textContent) + 1;
+                        } else if (ballH.posX == 0) {
+                            clearTimeout(timerID);
+                            changeGameScore();
+                            leftPlayerScore.textContent = Number(leftPlayerScore.textContent) + 1;
+                        } else {
+                            moveBall4();
+                            timerID = requestAnimationFrame(runBall);
+                        }
+                    });
+                }
+            } else {
+                gameOverSound();
+                over.style.display = "block";
+                restartGame.style.display = "block";
+                leftPlayerScore.textContent = 0;
+                rightPlayerScore.textContent = 0;
+            }
+        }
+
+        restartGame.onclick = function() {
+            over.style.display = "none";
+            restartGame.style.display = "none";
+            ball.style.display = "none";
+            leftPlayerScore.textContent = 0;
+            rightPlayerScore.textContent = 0;
+            leftRacketPosY = playingFieldHeight/2 - RacketHeight/2;
+            rightRacketPosX = playingFieldWidth - RacketWidth;
+            rightRacketPosY = playingFieldHeight/2 - RacketHeight/2;
+            leftRacket.style.transform = `translateY(${leftRacketPosY}px)`;
+            rightRacket.style.transform = `translate(${rightRacketPosX}px, ${rightRacketPosY}px`;
+        }
+
+        function changeGameScore() {
+            counter.style.display = "block";
+            textCounter.style.display = "block";
+
+            let countdownID = setTimeout(function decreaseCountdown() {
+                textCounter.textContent = Number(textCounter.textContent) -1;
+                if (Number(textCounter.textContent) > 0) {
+                    countdownID =setTimeout(decreaseCountdown, 1000);
+                } else {
+                    counter.style.display = "none";
+                    textCounter.style.display = "none";
+                    textCounter.textContent = "3";
+                    start();
+                }
+            }, 1000);
+        }
+
+        function checkX() {
+           
+            if ( (ballH.posX + ballH.width > rightRacketPosX) && (ballH.posY >= rightRacketPosY - ballH.height) && (ballH.posY <= (rightRacketPosY + RacketHeight))) {
+                clickSound();
+                ballH.speedX=-ballH.speedX;
+                ballH.posX = rightRacketPosX - ballH.width;
+            }
+            if ( ballH.posX <= RacketWidth && (ballH.posY >= leftRacketPosY - ballH.height) && (ballH.posY <= (leftRacketPosY + RacketHeight))) {
+                clickSound();
+                ballH.speedX=-ballH.speedX;
+                ballH.posX = RacketWidth;
+            }
+            if ( ballH.posX + ballH.width > playingFieldWidth) {
+                clickSound();
+                ballH.posX = playingFieldWidth-ballH.width;
+            }
+            if (ballH.posX < 0) {
+                clickSound();
+                ballH.posX = 0;
+            }
+       }
+
+       function checkY() {
+            if ( ballH.posY + ballH.height > playingFieldHeight) {
+                clickSound();
+                ballH.speedY=-ballH.speedY;
+                ballH.posY = playingFieldHeight - ballH.height;  
+            }
+            if ( ballH.posY < 0 ) {
+                clickSound();
+                ballH.speedY=-ballH.speedY;
+                ballH.posY = 0;
+            }
+        }
+
+        function moveBall1() {
+      
+            ballH.posX += ballH.speedX;
+            checkX();
+            ballH.posY -= ballH.speedY;
+            checkY();
+            ballH.update();
+        }
+
+        function moveBall2() {
+            ballH.posX -= ballH.speedX;   
+            checkX();
+            ballH.posY -= ballH.speedY;
+            checkY();
+            ballH.update();
+        }
+
+        function moveBall3() {
+            ballH.posX -= ballH.speedX; 
+            checkX();
+            ballH.posY += ballH.speedY;
+            checkY();
+            ballH.update();
+        }
+
+        function moveBall4() {
+            ballH.posX += ballH.speedX;  
+            checkX();
+            ballH.posY += ballH.speedY;
+            checkY();
+            ballH.update();
+        }
+
+        ballH.update();
+
+        function clickSoundInit() {
+            clickAudio.play(); // запускаем звук
+            clickAudio.pause(); // и сразу останавливаем
+            gameOverAudio.play();
+            gameOverAudio.pause();
+        }
+
+        function clickSound() {
+            clickAudio.currentTime=0; // в секундах
+            clickAudio.play();
+        }
+
+        function gameOverSound() {
+            gameOverAudio.currentTime=0; // в секундах
+            gameOverAudio.play();
+        }
+
+    </script>
+    
+</body>
+</html>
