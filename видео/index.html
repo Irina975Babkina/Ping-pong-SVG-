@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><Video-gallery></title>
+</head>
+<style>
+    body {
+        margin: 0;
+        color: beige; 
+    }
+    .image {
+        position: fixed;
+        top:0;
+        right: 0;
+    }
+    .content {
+        position: absolute;
+        top: 10px;
+        left: 40%;
+        margin-right: 10px;
+    }
+    .header {
+        font-size: 30px;
+        text-align: center;
+    }
+    .dance-it {
+        font-size: 25px;
+    }
+    .video1 {
+        margin: 0 0 0 30.5%;  
+    }
+
+    .video1 iframe {
+        object-fit: contain;
+        aspect-ratio: 4/3;
+        width: 55%;
+        height: auto;
+    }
+
+    .video2 {
+        margin: 0 0 0 23%;  
+    }
+
+    .video2 iframe {
+        object-fit: contain;
+        aspect-ratio: 16/9;
+        width: 70%;
+        height: auto;
+    }
+
+    .video3 {
+        margin: 0 0 0 35%;   
+    }
+
+    .video3 iframe {
+        object-fit: contain;
+        aspect-ratio: 4/4;
+        width: 50%;
+        height: auto;
+    }
+
+    .video4{
+        margin: 0 0 0 30%;  
+        
+    }
+
+    .video4 iframe {
+        object-fit: contain;
+        aspect-ratio: 16/9;
+        width: 60%;
+        height: auto;
+    }
+
+    .comment {
+        text-align: center;
+    }
+    
+    @media (max-width: 920px) {
+    body {
+        background-color: rgb(51, 21, 21);
+    }
+    .image {
+        width: 0;
+        height: 0;
+    }
+    .content {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        margin-right: 10px;
+    }
+    .header {
+        font-size: 25px;
+        text-align: center;
+    }
+    .dance-it {
+        font-size: 18px;
+    }
+
+}
+</style>
+
+<body>
+    <div class="wrapper">
+       <img class="image" src="images9/фон.jpg" width="100%" height="100%">
+        <div class="content">
+            <h1 class="header">Клевые танцевальные видео для вдохновения</h1>
+            <p class="dance-it">
+                Танец — это твой пульс, биение твоего сердца, твое дыхание. Это ритм твоей жизни. Это выражение во времени и движении, в счастье, радости, грусти и зависти. 
+                (Жак д'Амбуаз) 
+            </p>
+
+            <p class="video1">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/XeAXz1QJ3fc?si=axK5bqF70MNbnzlS"  title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            </p>
+            <p class="comment">посмотреть видео на <a href="https://www.youtube.com/watch?v=XeAXz1QJ3fc&t=14s" target="_blank">YouTube</a></p>
+
+            <p class="video2">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/Hh7LZ3DOT80" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            </p>
+            <p class="comment">посмотреть видео на <a href="https://www.youtube.com/embed/Hh7LZ3DOT80" target="_blank">YouTube</a></p>
+
+            <p class="video3">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/i2lpV4uopr4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            </p> 
+            <p class="comment">посмотреть видео на <a href="https://www.youtube.com/embed/i2lpV4uopr4" target="_blank">YouTube</a></p>
+
+            <p class="video4">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/b24a_2NPleg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            </p>
+            <p class="comment">посмотреть видео на <a href="https://www.youtube.com/embed/b24a_2NPleg" target="_blank">YouTube</a></p>
+        </div>
+    </div>
+</body>
+</html>
